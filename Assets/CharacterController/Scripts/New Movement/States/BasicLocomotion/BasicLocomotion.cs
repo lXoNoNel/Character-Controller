@@ -9,6 +9,7 @@ namespace MainGame.Movement.States
         MovementHandler movementHandler;
 
         Action<float> HandleMovement;
+        Action<float> HandleMovement_End;
         Action HandleRotation;
         public Action<IState> CallbackChangeRootState;
         public PlayerData data;
@@ -26,6 +27,9 @@ namespace MainGame.Movement.States
             this.data = data;
             this.basicLocoState = basicLocoState;
             this.CallbackChangeRootState = CallbackChangeRootState;
+
+
+            this.HandleMovement_End = movementHandler.HandleMovement_End;
 
             movementStateMachine = new MovementStateMachine();
         }
@@ -67,13 +71,14 @@ namespace MainGame.Movement.States
         {
             HandleMovement(data.exactMovementState.MovementSpeed);
             HandleRotation();
+            // movementHandler.HandleSlopes();
 
             handleTransitions();
         }
 
         public override void Exit()
         {
-
+            this.HandleMovement_End(data.exactMovementState.MovementSpeed);
         }
 
         void handleTransitions()
