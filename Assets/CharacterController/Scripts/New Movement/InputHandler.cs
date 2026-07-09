@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class InputManager : MonoBehaviour
+public class InputHandler : MonoBehaviour
 {
+    [SerializeField]
     public PlayerControls playerControls;
-    PlayerLocomotion playerLocomotion;
-    AnimatorManager animatorManager;
+    PlayerHandler playerHandler;
 
     public Vector2 movementInput;
     public float moveAmount;
@@ -19,8 +19,7 @@ public class InputManager : MonoBehaviour
     /// </summary>
     void Awake()
     {
-        animatorManager = GetComponent<AnimatorManager>();
-        playerLocomotion = GetComponent<PlayerLocomotion>();
+        playerHandler = GetComponent<PlayerHandler>();
     }
 
     private void OnEnable() {
@@ -44,7 +43,6 @@ public class InputManager : MonoBehaviour
     public void HandleAllInputs()
     {
         HandleMovementInput();
-        HandleSprintingInput();
         HandleJumpInput();
     }
 
@@ -53,18 +51,23 @@ public class InputManager : MonoBehaviour
         horizontalInput = movementInput.x;
 
         moveAmount = Mathf.Clamp01(Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput));
-        animatorManager.UpdateAnimatorValues(0, moveAmount, playerLocomotion.isSprinting);
+    }
+
+
+    public float getMoveAmount() {
+        verticalInput = movementInput.y;
+        horizontalInput = movementInput.x;
+
+        return moveAmount = Mathf.Clamp01(Mathf.Abs(horizontalInput) + Mathf.Abs(verticalInput));
     }
 
     private void HandleSprintingInput()
     {
         if (b_Input && moveAmount > 0.5f)
         {
-            playerLocomotion.isSprinting = true;
         }
         else
         {
-            playerLocomotion.isSprinting = false;
         }
     }
 
@@ -73,7 +76,6 @@ public class InputManager : MonoBehaviour
         if(jump_input)
         {
             jump_input = false;
-            playerLocomotion.HandleJumping();
         }
     }
 }
