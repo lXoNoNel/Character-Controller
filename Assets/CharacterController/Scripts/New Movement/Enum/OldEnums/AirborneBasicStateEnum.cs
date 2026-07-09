@@ -1,5 +1,5 @@
 
-public enum AirborneBasicStateEnum
+public enum AirborneStateEnum
 {
     Grounded,
     Jump,

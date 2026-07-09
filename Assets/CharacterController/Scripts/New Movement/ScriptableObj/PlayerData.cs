@@ -4,6 +4,9 @@ using UnityEngine;
 public class PlayerData : ScriptableObject
 {
     #region movement
-    public MovementStateEnum movementState = MovementStateEnum.Idle;
+    // IMovementSubState parentMovementState = xPlayerState.Movement.Locomotion;
+    [SerializeReference] public xPlayerPrimaryState exactMovementState = null;    //? ONLY THING CHANGED MANUALLY, REST ON UPDATE
+    IAirborneSubState currentAirborneState = xPlayerPrimaryState.Movement.Airborne.Grounded;
+    
     #endregion
 }

@@ -12,11 +12,12 @@ namespace MainGame.Movement.States
         Action HandleRotation;
         public Action<IState> CallbackChangeRootState;
         public PlayerData data;
-        public Action<MovementStateEnum> CallbackChangeStateInObj;
-        BasicLocomotionStateEnum basicLocoState;
+        public Action<xPlayerPrimaryState> CallbackChangeStateInObj;
+        xPlayerPrimaryState basicLocoState;
         MovementStateMachine movementStateMachine;
 
-        public BasicLocomotion(MovementHandler movementHandler, Action<IState> CallbackChangeRootState, Action<MovementStateEnum> CallbackChangeStateInObj, Action<float> HandleMovement, Action HandleRotation, PlayerData data, BasicLocomotionStateEnum basicLocoState)
+        public BasicLocomotion(MovementHandler movementHandler, Action<IState> CallbackChangeRootState, Action<xPlayerPrimaryState> CallbackChangeStateInObj, 
+        Action<float> HandleMovement, Action HandleRotation, PlayerData data, xPlayerPrimaryState basicLocoState)
         {
             this.movementHandler = movementHandler;
             this.CallbackChangeStateInObj = CallbackChangeStateInObj;
@@ -34,20 +35,23 @@ namespace MainGame.Movement.States
         //     this.movementStateMachine.ChangeState(movementState);
         // }
 
-        public void changeIntoState(BasicLocomotionStateEnum state)
+        public void changeIntoState(xPlayerPrimaryState state)
         {
-            switch(state)
+            switch (state)
             {
-                case BasicLocomotionStateEnum.Idle:
+                case var s when s == xPlayerPrimaryState.Movement.Locomotion.Idle:
                     movementStateMachine.ChangeState(new IdleLocomotion(this));
                     break;
-                case BasicLocomotionStateEnum.Walking:
+                    
+                case var s when s == xPlayerPrimaryState.Movement.Locomotion.Walking:
                     movementStateMachine.ChangeState(new WalkingLocomotion(this));
                     break;
-                case BasicLocomotionStateEnum.Running:
+                    
+                case var s when s == xPlayerPrimaryState.Movement.Locomotion.Running:
                     movementStateMachine.ChangeState(new RunningLocomotion(this));
                     break;
-                case BasicLocomotionStateEnum.Sprinting:
+                    
+                case var s when s == xPlayerPrimaryState.Movement.Locomotion.Sprinting:
                     movementStateMachine.ChangeState(new SprintingLocomotion(this));
                     break;
             }
@@ -61,7 +65,7 @@ namespace MainGame.Movement.States
 
         public override void Execute()
         {
-            HandleMovement(data.movementState.GetSpeed());
+            HandleMovement(data.exactMovementState.MovementSpeed);
             HandleRotation();
 
             handleTransitions();
@@ -74,11 +78,11 @@ namespace MainGame.Movement.States
 
         void handleTransitions()
         {
-            switch(data.movementState)
+            switch(data.exactMovementState)
             {
                 #region IDLE TRANSITIONS
 
-                case MovementStateEnum.Idle:
+                case var s when s == xPlayerPrimaryState.Movement.Locomotion.Idle:
                     switch(movementHandler.detectedMovementStateByInput())
                     {
                         case MovementStateEnum.Walking:
@@ -98,7 +102,7 @@ namespace MainGame.Movement.States
 
                 #region WALKING TRANSITIONS
 
-                case MovementStateEnum.Walking:
+                case var s when s == xPlayerPrimaryState.Movement.Locomotion.Walking:
                     switch(movementHandler.detectedMovementStateByInput())
                     {
                         case MovementStateEnum.Idle:
@@ -118,7 +122,7 @@ namespace MainGame.Movement.States
 
                 #region RUNNING TRANSITIONS
 
-                case MovementStateEnum.Running:
+                case var s when s == xPlayerPrimaryState.Movement.Locomotion.Running:
                     switch(movementHandler.detectedMovementStateByInput())
                     {
                         case MovementStateEnum.Idle:
@@ -138,7 +142,7 @@ namespace MainGame.Movement.States
 
                 #region SPRINTING TRANSITIONS
 
-                case MovementStateEnum.Sprinting:
+                case var s when s == xPlayerPrimaryState.Movement.Locomotion.Sprinting:
                     switch(movementHandler.detectedMovementStateByInput())
                     {
                         case MovementStateEnum.Idle:

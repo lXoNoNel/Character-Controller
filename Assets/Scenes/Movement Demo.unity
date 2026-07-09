@@ -559,7 +559,7 @@ MonoBehaviour:
   rotationSpeed: 15
   jumpHeight: 3
   gravityIntensity: -15
-  currentStateAsEnum: 0
+  _currentPrimaryStateString: NOT DEFINEDsdasda
   data: {fileID: 11400000, guid: 7119e16e74d3071ef82cafd30940a749, type: 2}
 --- !u!114 &870232559
 MonoBehaviour:
@@ -573,6 +573,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9e949d51dfdd88629c2c4d932ca83bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHandler
+--- !u!114 &870232565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 870232552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21e5d5822c9d38d38b1edb874dd863d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStateManager
+  data: {fileID: 11400000, guid: 7119e16e74d3071ef82cafd30940a749, type: 2}
 --- !u!1 &940153098
 GameObject:
   m_ObjectHideFlags: 0
@@ -1339,6 +1352,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 9212474470257285425, guid: 178faef7a9707debe8f346a784a559bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 870232559}
+    - targetCorrespondingSourceObject: {fileID: 9212474470257285425, guid: 178faef7a9707debe8f346a784a559bd, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 870232565}
   m_SourcePrefab: {fileID: 100100000, guid: 178faef7a9707debe8f346a784a559bd, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

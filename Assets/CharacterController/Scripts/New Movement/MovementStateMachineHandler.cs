@@ -16,7 +16,8 @@ public class MovementStatemachineHandler
 
 
 
-    public MovementStatemachineHandler(Action<float> HandleMovement, Action HandleRotation, MovementHandler movementHandler, MovementStateMachine movementStateMachine, PlayerData data) {
+    public MovementStatemachineHandler(Action<float> HandleMovement, Action HandleRotation, MovementHandler movementHandler, 
+    MovementStateMachine movementStateMachine, PlayerData data) {
         this.HandleMovement = HandleMovement;
         this.HandleRotation = HandleRotation;
         this.movementHandler = movementHandler;
@@ -36,9 +37,9 @@ public class MovementStatemachineHandler
 
     #region ENUM STATE DECLERATION
 
-    public void CallbackChangeStateInObj(MovementStateEnum newState)
+    public void CallbackChangeStateInObj(xPlayerPrimaryState newState)
     {
-        data.movementState = newState;
+        data.exactMovementState = newState;
     }
 
     #endregion
@@ -62,7 +63,8 @@ public class MovementStatemachineHandler
 
     public void locomotionStart()
     {
-        movementStateMachine.ChangeState(new BasicLocomotion(movementHandler, ChangeRootState, CallbackChangeStateInObj, HandleMovement, HandleRotation, data, BasicLocomotionStateEnum.Idle));
+        movementStateMachine.ChangeState(new BasicLocomotion(movementHandler, ChangeRootState, CallbackChangeStateInObj, 
+        HandleMovement, HandleRotation, data, xPlayerPrimaryState.Movement.Locomotion.Idle));
     }
 
     public void locomotionUpdate()

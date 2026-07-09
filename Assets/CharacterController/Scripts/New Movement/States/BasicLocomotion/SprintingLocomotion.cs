@@ -4,37 +4,24 @@ using UnityEngine;
 
 namespace MainGame.Movement.States
 {
-    public class SprintingLocomotion : IState
+    public class SprintingLocomotion : LocoState
     {
-        Action<MovementStateEnum> CallbackChangeStateInObj;
-        Action<IState> CallbackChangeRootState;
 
-
-
-        public SprintingLocomotion(BasicLocomotion caller)
+        public SprintingLocomotion(BasicLocomotion caller) : base(caller)
         {
-            this.CallbackChangeStateInObj = caller.CallbackChangeStateInObj;
-            this.CallbackChangeRootState = caller.CallbackChangeRootState;
         }
-        public SprintingLocomotion(MovementStatemachineHandler caller)
+
+        public SprintingLocomotion(MovementStatemachineHandler caller) : base(caller)
         {
-            this.CallbackChangeStateInObj = caller.CallbackChangeStateInObj;
-            this.CallbackChangeRootState = caller.ChangeRootState;
         }
 
         public override void Enter()
         {
-            this.CallbackChangeStateInObj(MovementStateEnum.Sprinting);
-        }
-        
-        public override void Execute()
-        {
-
+            playerPrimaryState = xPlayerPrimaryState.Movement.Locomotion.Sprinting;
+            
+            base.Enter();
         }
 
-        public override void Exit()
-        {
-        }
     }
 
 }

@@ -4,36 +4,24 @@ using UnityEngine;
 
 namespace MainGame.Movement.States
 {
-    public class IdleLocomotion : IState
+    public class IdleLocomotion : LocoState
     {
-        Action<MovementStateEnum> CallbackChangeStateInObj;
-        Action<IState> CallbackChangeRootState;
 
-
-        public IdleLocomotion(BasicLocomotion caller)
+        public IdleLocomotion(BasicLocomotion caller) : base(caller)
         {
-            this.CallbackChangeStateInObj = caller.CallbackChangeStateInObj;
-            this.CallbackChangeRootState = caller.CallbackChangeRootState;
         }
 
-        public IdleLocomotion(MovementStatemachineHandler caller)
+        public IdleLocomotion(MovementStatemachineHandler caller) : base(caller)
         {
-            this.CallbackChangeStateInObj = caller.CallbackChangeStateInObj;
-            this.CallbackChangeRootState = caller.ChangeRootState;
         }
 
         public override void Enter()
         {
-            this.CallbackChangeStateInObj(MovementStateEnum.Idle);
-        }
-        
-        public override void Execute()
-        {
+            playerPrimaryState = xPlayerPrimaryState.Movement.Locomotion.Idle;
+            
+            base.Enter();
         }
 
-        public override void Exit()
-        {
-        }
     }
 
 }

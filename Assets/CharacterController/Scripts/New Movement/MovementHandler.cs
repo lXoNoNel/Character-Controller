@@ -1,3 +1,4 @@
+using Unity.Collections;
 using UnityEngine;
 
 public class MovementHandler : MonoBehaviour
@@ -35,9 +36,22 @@ public class MovementHandler : MonoBehaviour
     public float gravityIntensity = -15f;
 
 
+//? ==========================================================================
+
+
     [Header("STATE DEBUG VALUES")]
 
-    public MovementStateEnum currentStateAsEnum;
+    // 1. This holds the actual data (hidden so it doesn't clutter the UI)
+    
+    [ReadOnly]
+    [SerializeField]
+    private string _currentPrimaryStateString = "NOT DEFINED"; 
+
+    PlayerStateDebugger playerStateDebugger;
+
+
+//? ==========================================================================
+
     private MovementStateMachine movementStateMachine;
 
 
@@ -50,6 +64,7 @@ public class MovementHandler : MonoBehaviour
     {
         inputHandler = GetComponent<InputHandler>();
         playerRigidbody = GetComponent<Rigidbody>();
+        playerStateDebugger = GetComponent<PlayerStateDebugger>();
 
         cameraObject = Camera.main.transform;
 
@@ -72,8 +87,7 @@ public class MovementHandler : MonoBehaviour
 
     void Update()
     {
-        currentStateAsEnum = data.movementState;
-        
+        _currentPrimaryStateString = playerStateDebugger.GetCurrentStateAsString();
     }
 
     void FixedUpdate()
