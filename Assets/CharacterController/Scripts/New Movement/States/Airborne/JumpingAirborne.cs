@@ -11,10 +11,6 @@ namespace MainGame.Movement.States
         {
         }
 
-        public JumpingAirborne(MovementStatemachineHandler caller) : base(caller)
-        {
-        }
-
         public override void Enter()
         {
             playerPrimaryState = xPlayerPrimaryState.Movement.Airborne.Jumping;

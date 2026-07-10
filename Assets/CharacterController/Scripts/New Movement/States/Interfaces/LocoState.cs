@@ -29,6 +29,12 @@ namespace MainGame.Movement.States
         {
             
         }
+
+        public override void FixedExecute()
+        {
+            
+        }
+
         public override void Exit()
         {
             

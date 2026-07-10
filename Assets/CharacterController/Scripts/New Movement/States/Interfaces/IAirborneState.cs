@@ -8,17 +8,15 @@ namespace MainGame.Movement.States
         protected Action<xPlayerPrimaryState> CallbackChangeStateInObj;
         protected Action<IState> CallbackChangeRootState;
         protected xPlayerPrimaryState playerPrimaryState;
+        
+        protected Airborne airborne;
 
         public IAirborneState(Airborne caller)
         {
             this.CallbackChangeStateInObj = caller.CallbackChangeStateInObj;
             this.CallbackChangeRootState = caller.CallbackChangeRootState;
-        }
 
-        public IAirborneState(MovementStatemachineHandler caller)
-        {
-            this.CallbackChangeStateInObj = caller.CallbackChangeStateInObj;
-            this.CallbackChangeRootState = caller.ChangeRootState;
+            this.airborne = caller;
         }
 
         public override void Enter()
@@ -29,6 +27,12 @@ namespace MainGame.Movement.States
         {
             
         }
+
+        public override void FixedExecute()
+        {
+            
+        }
+
         public override void Exit()
         {
             

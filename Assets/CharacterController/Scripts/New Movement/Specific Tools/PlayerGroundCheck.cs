@@ -12,6 +12,30 @@ public class PlayerGroundCheck : MonoBehaviour
     [SerializeField]
     private bool drawGizmos = true;
 
+    //?=======================================
+    //?=====GROUNDED CHECK FOR ANIM==========
+    //?=======================================
+
+    [Header("Line Ray Ground Check")]
+    public float groundCheckLineRayLength_ForAnim = 0.4f;
+    public float groundCheckLineRayHeight_ForAnim = 0.2f;
+
+    private RaycastHit groundHit;
+    public bool isGrounded_ForAnim;
+
+    public bool IsGrounded_ForAnim => isGrounded_ForAnim;
+    public Vector3 SlopeNormal => groundHit.normal;
+
+
+
+    public void FixedUpdate()
+    {
+        isGrounded_ForAnim = Physics.Raycast(groundCheckObj.position, Vector3.down, out groundHit, groundCheckLineRayLength_ForAnim + groundCheckLineRayHeight_ForAnim, groundLayer);
+    }
+
+    //?=======================================
+
+
     public bool isPlayerObjGrounded()
     {
         RaycastHit hit;

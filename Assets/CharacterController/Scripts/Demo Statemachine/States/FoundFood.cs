@@ -21,6 +21,11 @@ public class FoundFood : IState
         
     }
 
+    public override void FixedExecute()
+    {
+        
+    }
+
     public override void Exit()
     {
         

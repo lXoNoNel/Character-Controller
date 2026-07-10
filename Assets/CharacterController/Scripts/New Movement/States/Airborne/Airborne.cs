@@ -13,9 +13,11 @@ namespace MainGame.Movement.States
         public bool isPlayerObjGrounded;
 
         //?========================================0
+        
+        public bool isInLandingAnimation;
 
 
-        MovementHandler movementHandler;
+        public MovementHandler movementHandler {get; private set;}
 
 
         //? CALLBACK STUFF
@@ -39,6 +41,8 @@ namespace MainGame.Movement.States
         xPlayerPrimaryState airborneState;
         MovementStateMachine airborneStateMachine;
 
+        MovementAnimationHandler movementAnimationHandler;
+
 
 
         public Airborne(MovementHandler movementHandler, MovementStatemachineHandler movementStatemachineHandler,
@@ -57,6 +61,8 @@ namespace MainGame.Movement.States
 
             this.activeFallingHandling = movementStatemachineHandler.activeFallingHandling;
             this.activeFallingHandling_OnExit = movementHandler.activeFallingHandling_OnExit;
+
+            this.movementAnimationHandler = movementHandler.movementAnimationHandler;
 
             airborneStateMachine = new MovementStateMachine();
         }
@@ -86,6 +92,8 @@ namespace MainGame.Movement.States
 
         public override void Enter()
         {
+            movementAnimationHandler.airborneEnter_Anim();
+
             changeIntoState(airborneState);
         }
 
@@ -101,7 +109,7 @@ namespace MainGame.Movement.States
 
         public override void Exit()
         {
-
+            movementAnimationHandler.airborneExit_Anim();
         }
 
         private void handleTransitions()
@@ -116,9 +124,19 @@ namespace MainGame.Movement.States
                     break;
                     
                 case var s when s == xPlayerPrimaryState.Movement.Airborne.Landing:
-                    locomotionStart();
+                    if(!movementAnimationHandler.isInLandingAnimation() || !movementAnimationHandler.isAnimatingAirborne)
+                    {
+                        locomotionStart();
+                    }
                     break;
             }
+        }
+
+
+//?========================================================================00
+        public override void FixedExecute()
+        {
+            
         }
     }
 

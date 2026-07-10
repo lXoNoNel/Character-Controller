@@ -67,17 +67,33 @@ public class MovementStatemachineHandler
 
     public void finalFixedUpdate()
     {
-        locomotionUpdate();
+        movementFixedUpdate();
     }
 
     public void finalUpdate()
     {
+        movementUpdate();
+        
         exactCurrentState = data.exactMovementState;
         isPlayerObjGrounded = playerGroundCheck.isPlayerObjGrounded();
 
         handleTransitions();
 
     }
+
+
+//?===================================================================
+
+    public void movementUpdate()
+    {
+        movementStateMachine.ExecuteStateUpdate();
+    }
+
+    public void movementFixedUpdate()
+    {
+        movementStateMachine.ExecuteStateFixedUpdate();
+    }
+
 
 //--------------------------------------------------
 
@@ -87,11 +103,6 @@ public class MovementStatemachineHandler
     {
         movementStateMachine.ChangeState(new BasicLocomotion(movementHandler, ChangeRootState, 
         CallbackChangeStateInObj, xPlayerPrimaryState.Movement.Locomotion.Idle));
-    }
-
-    public void locomotionUpdate()
-    {
-        movementStateMachine.ExecuteStateUpdate();
     }
 
     #endregion

@@ -68,7 +68,7 @@ public class MovementHandler : MonoBehaviour
     public PlayerGroundCheck playerGroundCheck { get; private set; }
     PlayerSlopeHandler slopeHandler;
 
-    MovementAnimationHandler movementAnimationHandler;
+    public MovementAnimationHandler movementAnimationHandler {get; private set;}
 
 
 //? ==========================================================================
@@ -131,20 +131,6 @@ public class MovementHandler : MonoBehaviour
 //?===================================================================================0
 //!================TO STATEMACHINE GIVEN FUNCTIONS===============================
 //?===================================================================================0
-
-    // public void HandleMovement_Anim()
-    // {
-    //     float currentSpeed = playerRigidbody.linearVelocity.magnitude; 
-
-    //     // Update the blend tree seamlessly
-    //     brain.Anim.SetFloat(CharacterBrain.SpeedHash, currentSpeed, 0.1f, Time.deltaTime);
-
-    //     // State transition logic
-    //     if (Input.GetButtonDown("Jump"))
-    //     {
-    //         brain.StateMachine.ChangeState(new JumpState(brain));
-    //     }
-    // }
 
 //?====================================================================0
 
@@ -227,10 +213,13 @@ public class MovementHandler : MonoBehaviour
     }
     
 
+//*====================================================
     public void HandleMovement_Anim()
     {
         movementAnimationHandler.HandleMovement_Anim();
     }
+
+//*====================================================
 
     private bool isMakingSharpTurn;
 
@@ -311,6 +300,15 @@ public class MovementHandler : MonoBehaviour
     {
         inAirTimer = 0;
     }
+
+    //*====================================================
+    
+    public void activeFallingHandling_Anim()
+    {
+        movementAnimationHandler.activeFallingHandling_Anim(inAirTimer);
+    }
+
+    //*====================================================
 
 
     #endregion

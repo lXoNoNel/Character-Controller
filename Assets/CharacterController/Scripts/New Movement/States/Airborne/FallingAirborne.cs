@@ -10,21 +10,21 @@ namespace MainGame.Movement.States
         System.Action activeFallingHandling;
         System.Action activeFallingHandling_OnExit;
 
+
         public FallingAirborne(Airborne caller, System.Action activeFallingHandling, System.Action activeFallingHandling_OnExit) : base(caller)
         {
             this.activeFallingHandling = activeFallingHandling;
             this.activeFallingHandling_OnExit = activeFallingHandling_OnExit;
         }
 
-        public FallingAirborne(MovementStatemachineHandler caller) : base(caller)
-        {
-        }
 
         public override void Enter()
         {
             playerPrimaryState = xPlayerPrimaryState.Movement.Airborne.Falling;
             
             base.Enter();
+
+            airborne.movementHandler.movementAnimationHandler.fallingEnter_Anim();
         }
 
         public override void Execute()
@@ -32,6 +32,8 @@ namespace MainGame.Movement.States
             base.Execute();
 
             activeFallingHandling();
+
+            airborne.movementHandler.activeFallingHandling_Anim();
         }
 
         public override void Exit()
@@ -39,6 +41,7 @@ namespace MainGame.Movement.States
             base.Exit();
 
             activeFallingHandling_OnExit();
+            airborne.movementHandler.movementAnimationHandler.fallingExit_Anim();
         }
 
     }

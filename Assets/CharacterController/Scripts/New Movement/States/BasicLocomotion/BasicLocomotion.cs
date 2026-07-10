@@ -75,12 +75,22 @@ namespace MainGame.Movement.States
 
         public override void Execute()
         {
+            // HandleMovement(data.exactMovementState.MovementSpeed);
+            // HandleRotation();
+            // HandleMovement_Anim();
+
+            movementStateMachine.ExecuteStateUpdate();
+
+            handleTransitions();
+        }
+
+        public override void FixedExecute()
+        {
+            movementStateMachine.ExecuteStateFixedUpdate();
+
             HandleMovement(data.exactMovementState.MovementSpeed);
             HandleRotation();
             HandleMovement_Anim();
-            // movementHandler.HandleSlopes();
-
-            handleTransitions();
         }
 
         public override void Exit()
@@ -175,7 +185,11 @@ namespace MainGame.Movement.States
                     break;
             }
 
+
         }
+
+        //?========================================================================00
+        
 
     }
 

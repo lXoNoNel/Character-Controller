@@ -28,6 +28,14 @@ public class MovementStateMachine
         }
     }
 
+    public void ExecuteStateFixedUpdate()
+    {
+        if(this.currentlyRunningState != null)
+        {
+            this.currentlyRunningState.FixedExecute();
+        }
+    }
+
     public void SwitchToPreviousState()
     {
         this.currentlyRunningState.Exit();
