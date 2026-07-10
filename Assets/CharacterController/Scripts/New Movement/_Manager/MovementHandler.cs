@@ -19,19 +19,27 @@ public class MovementHandler : MonoBehaviour
     [Header("Slope")]
     public float maxStepDownHeight;
     public float maxSlopeSpeedLimit = 8f;
-
-    [Header("Movement Flags")]
-    public bool isSprinting;
-    public bool isGrounded;
-    public bool isJumping;
     public float pressureWhileMoving;
 
 
     [Header("Movement Speeds")]
-    public float walkingSpeed = 1.5f;
-    public float runningSpeed = 6f;
-    public float sprintingSpeed = 8f;
     public float rotationSpeed = 15f;
+
+
+
+    [Header("Sharp Turn Settings")]
+    public float sharpTurnAngleThreshold = 40f; // The angle limit you requested
+
+    [Range(0.1f, 1f)]
+    public float sharpTurnSpeedMultiplier = 0.3f; // Slow down to 30% of normal speed during a sharp turn
+
+    [Range(0.1f, 1f)]
+    public float sharpTurnRotationMultiplier = 0.5f; // Cut rotation speed in half while pivoting
+
+    [Header("Movement Smoothness")]
+    [Tooltip("Higher values mean faster acceleration (snappier). Lower values mean slower acceleration (weightier).")]
+    public float accelerationSpeed = 8f;
+
 
     [Header("Jump Speeds")]
     public float jumpHeight = 3f;
@@ -51,7 +59,7 @@ public class MovementHandler : MonoBehaviour
 
     PlayerStateDebugger playerStateDebugger;
     PlayerGroundCheck playerGroundCheck;
-    PlayerSlopeCheck playerSlopeCheck;
+    PlayerSlopeHandler slopeHandler;
 
 //? ==========================================================================
 
@@ -69,7 +77,7 @@ public class MovementHandler : MonoBehaviour
         playerRigidbody = GetComponent<Rigidbody>();
         playerStateDebugger = GetComponent<PlayerStateDebugger>();
         playerGroundCheck = GetComponent<PlayerGroundCheck>();
-        playerSlopeCheck = GetComponent<PlayerSlopeCheck>();
+        slopeHandler = GetComponent<PlayerSlopeHandler>();
 
         cameraObject = Camera.main.transform;
 
@@ -145,48 +153,65 @@ public class MovementHandler : MonoBehaviour
 
 
     private void HandleMovement(float movementSpeed) 
+{
+    // 1. Calculate raw camera direction
+    Vector3 rawMoveDirection = cameraObject.forward * inputHandler.verticalInput;
+    rawMoveDirection += cameraObject.right * inputHandler.horizontalInput;
+    rawMoveDirection.y = 0;
+    rawMoveDirection.Normalize();
+
+    Vector3 currentVelocity = playerRigidbody.linearVelocity;
+
+    if (rawMoveDirection.magnitude > 0.1f)
     {
-        // 1. Calculate raw direction based on camera view
-        Vector3 rawMoveDirection = cameraObject.forward * inputHandler.verticalInput;
-        rawMoveDirection += cameraObject.right * inputHandler.horizontalInput;
-        
-        // Flatten it initially so camera tilt up/down doesn't make the player fly/burrow
-        rawMoveDirection.y = 0;
-        rawMoveDirection.Normalize();
-
-        // 2. Capture the current physics velocity so we don't destroy gravity
-        Vector3 currentVelocity = playerRigidbody.linearVelocity;
-
-        if (rawMoveDirection.magnitude > 0.1f)
+        // 2. Check if a steep slope blocks us
+        if (slopeHandler.IsSlopeTooSteep(rawMoveDirection))
         {
-            // 3. Project the direction onto the slope if grounded
-            Vector3 targetMoveDirection = playerSlopeCheck.GetSlopeMoveDirection(rawMoveDirection);
-            Vector3 targetVelocity = targetMoveDirection * movementSpeed;
+            playerRigidbody.linearVelocity = Vector3.Lerp(currentVelocity, new Vector3(0, currentVelocity.y, 0), accelerationSpeed * Time.fixedDeltaTime);
+            return;
+        }
 
-            if (playerSlopeCheck.IsGrounded)
-            {
-                // On the ground, we fully control X, Y, and Z via the slope calculation
-                playerRigidbody.linearVelocity = targetVelocity;
-            }
-            else
-            {
-                // In the air, we update horizontal speed but PRESERVE falling gravity (currentVelocity.y)
-                targetVelocity.y = currentVelocity.y; 
-                playerRigidbody.linearVelocity = targetVelocity;
-            }
+        // 3. Sharp Turn Speed Throttle
+        float activeSpeed = movementSpeed;
+        if (isMakingSharpTurn)
+        {
+            activeSpeed *= sharpTurnSpeedMultiplier;
+        }
+
+        // 4. Calculate the absolute goal velocity we WANT to reach
+        Vector3 targetMoveDirection = slopeHandler.GetSlopeMoveDirection(rawMoveDirection);
+        Vector3 goalVelocity = targetMoveDirection * activeSpeed;
+
+        if (slopeHandler.IsGrounded)
+        {
+            // NON-LINEAR SMOOTHING: Blends current velocity into the goal velocity exponentially over time
+            playerRigidbody.linearVelocity = Vector3.Lerp(currentVelocity, goalVelocity, accelerationSpeed * Time.fixedDeltaTime);
         }
         else
         {
-            // 4. Handle Stopping / Idle states
-            if (playerSlopeCheck.IsGrounded)
+            // In the air, blend horizontal speed smoothly but preserve exact falling gravity (currentVelocity.y)
+            goalVelocity.y = currentVelocity.y; 
+            
+            // Separate XZ and Y blending so horizontal air-control is smooth but gravity falls uninterrupted
+            Vector3 smoothAirVelocity = Vector3.Lerp(currentVelocity, goalVelocity, accelerationSpeed * Time.fixedDeltaTime);
+            smoothAirVelocity.y = currentVelocity.y; 
+            
+            playerRigidbody.linearVelocity = smoothAirVelocity;
+        }
+        }
+        else
+        {
+            // 5. Smoothly decelerate to a stop when input is released (prevents abrupt stopping)
+            if (slopeHandler.IsGrounded)
             {
-                // Prevent sliding down ramps when standing still
-                playerRigidbody.linearVelocity = Vector3.zero;
+                playerRigidbody.linearVelocity = Vector3.Lerp(currentVelocity, Vector3.zero, accelerationSpeed * Time.fixedDeltaTime);
             }
             else
             {
-                // Just let gravity do its job if we are falling without input
-                playerRigidbody.linearVelocity = new Vector3(0, currentVelocity.y, 0);
+                // Let gravity bring them down naturally while sliding to a halt horizontally
+                Vector3 stopAirVelocity = Vector3.Lerp(currentVelocity, new Vector3(0, currentVelocity.y, 0), accelerationSpeed * Time.fixedDeltaTime);
+                stopAirVelocity.y = currentVelocity.y;
+                playerRigidbody.linearVelocity = stopAirVelocity;
             }
         }
     }
@@ -200,28 +225,47 @@ public class MovementHandler : MonoBehaviour
         moveDirection = moveDirection * movementSpeed;
 
 
-        Vector3 movementVelocity =  moveDirection * 0.5f;
+        Vector3 movementVelocity =  moveDirection * 0.45f;
         moveDirection.Normalize();
         playerRigidbody.linearVelocity = movementVelocity;
     }
     
 
-    private void HandleRotation() {
-        Vector3 targetDirection = Vector3.zero;
+    private bool isMakingSharpTurn;
+
+    private void HandleRotation() 
+    {
+        Vector3 targetDirection = Vector3.forward;
 
         targetDirection = cameraObject.forward * inputHandler.verticalInput;
-        targetDirection = targetDirection + cameraObject.right * inputHandler.horizontalInput;
-        targetDirection.Normalize();
+        targetDirection += cameraObject.right * inputHandler.horizontalInput;
         targetDirection.y = 0;
+        targetDirection.Normalize();
 
         if (targetDirection == Vector3.zero)
         {
             targetDirection = transform.forward;
+            isMakingSharpTurn = false; // Reset if standing still
+        }
+        else
+        {
+            // 1. Calculate the angle between where we are currently looking vs where we want to go
+            float turnAngle = Vector3.Angle(transform.forward, targetDirection);
+
+            // 2. Determine if this constitutes a "Sharp Turn"
+            isMakingSharpTurn = turnAngle > sharpTurnAngleThreshold;
         }
 
         Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
-        Quaternion playerRotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
+        // 3. Dynamically adjust rotation speed. If making a sharp turn, multiply it by your reduction variable.
+        float dynamicRotationSpeed = rotationSpeed;
+        if (isMakingSharpTurn)
+        {
+            dynamicRotationSpeed *= sharpTurnRotationMultiplier;
+        }
+
+        Quaternion playerRotation = Quaternion.Slerp(transform.rotation, targetRotation, dynamicRotationSpeed * Time.fixedDeltaTime);
         transform.rotation = playerRotation; 
     }
 

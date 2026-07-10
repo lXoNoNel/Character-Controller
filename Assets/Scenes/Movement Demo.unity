@@ -547,14 +547,12 @@ MonoBehaviour:
   fallingVelocity: 38
   maxStepDownHeight: 0.5
   maxSlopeSpeedLimit: 8
-  isSprinting: 0
-  isGrounded: 0
-  isJumping: 0
   pressureWhileMoving: 4
-  walkingSpeed: 1.5
-  runningSpeed: 6
-  sprintingSpeed: 8
-  rotationSpeed: 15
+  rotationSpeed: 12
+  sharpTurnAngleThreshold: 40
+  sharpTurnSpeedMultiplier: 0.437
+  sharpTurnRotationMultiplier: 0.527
+  accelerationSpeed: 8
   jumpHeight: 3
   gravityIntensity: -15
   _currentPrimaryStateString: NOT DEFINED
@@ -571,6 +569,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9e949d51dfdd88629c2c4d932ca83bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHandler
+--- !u!54 &870232562 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 6091544152535019774, guid: 178faef7a9707debe8f346a784a559bd, type: 3}
+  m_PrefabInstance: {fileID: 4761049132224288454}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &870232565
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -598,11 +601,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerGroundCheck
   groundCheckObj: {fileID: 661505668}
   rayCastHeightOffset: 0.2
-  rayCastMaxDistance: 0.4
+  rayCastMaxDistance: 0.19
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
-  drawGizmos: 1
+  drawGizmos: 0
 --- !u!114 &870232567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -615,15 +618,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aec94fa9f6113e763955232b39421095, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSlopeCheck
-  rb: {fileID: 0}
+  rb: {fileID: 870232562}
   groundCheckObj: {fileID: 661505668}
-  castRadius: 0.2
-  castLength: 0.5
-  heightOffset: 0.1
+  rayLength: 0.72
+  heightOffset: 0.27
+  stepLookAhead: 0.82
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
-  maxSlopeAngle: 45
+  maxSlopeAngle: 35
 --- !u!1 &900027030
 GameObject:
   m_ObjectHideFlags: 0
@@ -1566,6 +1569,18 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1696684731606248025, guid: 178faef7a9707debe8f346a784a559bd, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.09447074
+      objectReference: {fileID: 0}
+    - target: {fileID: 5015915843255889148, guid: 178faef7a9707debe8f346a784a559bd, type: 3}
+      propertyPath: m_Height
+      value: 1.9208909
+      objectReference: {fileID: 0}
+    - target: {fileID: 5015915843255889148, guid: 178faef7a9707debe8f346a784a559bd, type: 3}
+      propertyPath: m_Center.y
+      value: 0.9395545
+      objectReference: {fileID: 0}
     - target: {fileID: 6091544152535019774, guid: 178faef7a9707debe8f346a784a559bd, type: 3}
       propertyPath: m_Mass
       value: 10
@@ -1613,6 +1628,18 @@ PrefabInstance:
     - target: {fileID: 6787700021682320146, guid: 178faef7a9707debe8f346a784a559bd, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6879311001705664950, guid: 178faef7a9707debe8f346a784a559bd, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.09447074
+      objectReference: {fileID: 0}
+    - target: {fileID: 7711962950245276180, guid: 178faef7a9707debe8f346a784a559bd, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.105
+      objectReference: {fileID: 0}
+    - target: {fileID: 8399943467013899147, guid: 178faef7a9707debe8f346a784a559bd, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -3.214
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
