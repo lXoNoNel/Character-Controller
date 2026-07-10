@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class MovementHandler : MonoBehaviour
 {
-    InputHandler inputHandler;
-
     Vector3 moveDirection;
     Transform cameraObject;
     Rigidbody playerRigidbody;
@@ -57,9 +55,21 @@ public class MovementHandler : MonoBehaviour
     [SerializeField]
     private string _currentPrimaryStateString = "NOT DEFINED"; 
 
+
+//? ==========================================================================
+
+///? CLASS REFERENCES 
+/// 
+//? ==========================================================================
     PlayerStateDebugger playerStateDebugger;
-    PlayerGroundCheck playerGroundCheck;
+
+    InputHandler inputHandler;
+
+    public PlayerGroundCheck playerGroundCheck { get; private set; }
     PlayerSlopeHandler slopeHandler;
+
+    MovementAnimationHandler movementAnimationHandler;
+
 
 //? ==========================================================================
 
@@ -75,9 +85,13 @@ public class MovementHandler : MonoBehaviour
     {
         inputHandler = GetComponent<InputHandler>();
         playerRigidbody = GetComponent<Rigidbody>();
+
+
         playerStateDebugger = GetComponent<PlayerStateDebugger>();
         playerGroundCheck = GetComponent<PlayerGroundCheck>();
         slopeHandler = GetComponent<PlayerSlopeHandler>();
+        movementAnimationHandler = GetComponent<MovementAnimationHandler>();
+
 
         cameraObject = Camera.main.transform;
 
@@ -88,10 +102,8 @@ public class MovementHandler : MonoBehaviour
 
         if(movementStatemachineHandler == null)
         {
-            movementStatemachineHandler = new MovementStatemachineHandler(HandleMovement, 
-            activeFallingHandling, HandleRotation, this, 
-            playerGroundCheck,
-            movementStateMachine, data);
+            movementStatemachineHandler = new MovementStatemachineHandler(this, 
+            movementStateMachine);
         }
     }
 
@@ -101,7 +113,7 @@ public class MovementHandler : MonoBehaviour
         
     }
 
-    void Update()
+    public void MovementUpdate()
     {
         _currentPrimaryStateString = playerStateDebugger.GetCurrentStateAsString();
 
@@ -110,49 +122,33 @@ public class MovementHandler : MonoBehaviour
         movementStatemachineHandler.finalUpdate();
     }
 
-    void FixedUpdate()
+    public void MovementFixedUpdate()
     {
-        //HandleRotation();
-
         movementStatemachineHandler.finalFixedUpdate();
     }
 
-    // public void HandleSlopes()
-    // {
-        
-    // }
-
-    // public void HandleSlopes()
-    // {
-    //     if (moveDirection.magnitude > 0.1f)
-    //     {
-    //         // Convert flat horizontal movement to perfectly match the hill's slope angle
-    //         targetMoveDirection = playerSlopeCheck.GetSlopeMoveDirection(moveDirection);
-
-    //         // Calculate target velocity (Notice it now includes the correct Y tilt inherently)
-    //         targetVelocity = targetMoveDirection * 6f;
-
-    //         // Apply to the Rigidbody
-    //         playerRigidbody.linearVelocity = targetVelocity;
-    //     }
-    //     else
-    //     {
-    //         // 4. PREVENT SLIDING DOWN HILLS WHEN STANDING STILL:
-    //         // If we are on a slope and not moving, neutralize gravity to freeze completely
-    //         if (playerSlopeCheck.IsGrounded && Vector3.Angle(Vector3.up, playerSlopeCheck.SlopeNormal) > 2f)
-    //         {
-    //             playerRigidbody.linearVelocity = Vector3.zero;
-    //             // Optional: You can temporarily change Rigidbody constraints or turn off gravity here
-    //         }
-    //     }
-    // }
 
 //?===================================================================================0
 //!================TO STATEMACHINE GIVEN FUNCTIONS===============================
 //?===================================================================================0
 
+    // public void HandleMovement_Anim()
+    // {
+    //     float currentSpeed = playerRigidbody.linearVelocity.magnitude; 
 
-    private void HandleMovement(float movementSpeed) 
+    //     // Update the blend tree seamlessly
+    //     brain.Anim.SetFloat(CharacterBrain.SpeedHash, currentSpeed, 0.1f, Time.deltaTime);
+
+    //     // State transition logic
+    //     if (Input.GetButtonDown("Jump"))
+    //     {
+    //         brain.StateMachine.ChangeState(new JumpState(brain));
+    //     }
+    // }
+
+//?====================================================================0
+
+    public void HandleMovement(float movementSpeed) 
 {
     // 1. Calculate raw camera direction
     Vector3 rawMoveDirection = cameraObject.forward * inputHandler.verticalInput;
@@ -231,9 +227,14 @@ public class MovementHandler : MonoBehaviour
     }
     
 
+    public void HandleMovement_Anim()
+    {
+        movementAnimationHandler.HandleMovement_Anim();
+    }
+
     private bool isMakingSharpTurn;
 
-    private void HandleRotation() 
+    public void HandleRotation() 
     {
         Vector3 targetDirection = Vector3.forward;
 
@@ -299,7 +300,7 @@ public class MovementHandler : MonoBehaviour
         return playerGroundCheck.isPlayerObjGrounded();
     }
 
-    private void activeFallingHandling()
+    public void activeFallingHandling()
     {
         inAirTimer = inAirTimer + Time.deltaTime;
         playerRigidbody.AddForce(transform.forward * leapingVelocity);

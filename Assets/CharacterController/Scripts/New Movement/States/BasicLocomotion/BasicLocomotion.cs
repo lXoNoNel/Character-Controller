@@ -14,22 +14,28 @@ namespace MainGame.Movement.States
         public Action<IState> CallbackChangeRootState;
         public PlayerData data;
         public Action<xPlayerPrimaryState> CallbackChangeStateInObj;
+
+        public Action HandleMovement_Anim;
+
         xPlayerPrimaryState basicLocoState;
         MovementStateMachine movementStateMachine;
 
-        public BasicLocomotion(MovementHandler movementHandler, Action<IState> CallbackChangeRootState, Action<xPlayerPrimaryState> CallbackChangeStateInObj, 
-        Action<float> HandleMovement, Action HandleRotation, PlayerData data, xPlayerPrimaryState basicLocoState)
+        public BasicLocomotion(MovementHandler movementHandler, Action<IState> CallbackChangeRootState, 
+        Action<xPlayerPrimaryState> CallbackChangeStateInObj,  xPlayerPrimaryState basicLocoState)
         {
             this.movementHandler = movementHandler;
             this.CallbackChangeStateInObj = CallbackChangeStateInObj;
-            this.HandleMovement = HandleMovement;
-            this.HandleRotation = HandleRotation;
-            this.data = data;
-            this.basicLocoState = basicLocoState;
             this.CallbackChangeRootState = CallbackChangeRootState;
+
+            this.basicLocoState = basicLocoState;
+
+            this.HandleMovement = movementHandler.HandleMovement;
+            this.HandleRotation = movementHandler.HandleRotation;
+            this.data = movementHandler.data;
 
 
             this.HandleMovement_End = movementHandler.HandleMovement_End;
+            this.HandleMovement_Anim = movementHandler.HandleMovement_Anim;
 
             movementStateMachine = new MovementStateMachine();
         }
@@ -71,6 +77,7 @@ namespace MainGame.Movement.States
         {
             HandleMovement(data.exactMovementState.MovementSpeed);
             HandleRotation();
+            HandleMovement_Anim();
             // movementHandler.HandleSlopes();
 
             handleTransitions();

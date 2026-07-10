@@ -23,19 +23,18 @@ public class MovementStatemachineHandler
     public xPlayerPrimaryState exactCurrentState;
 
 
-
-    public MovementStatemachineHandler(Action<float> HandleMovement,
-    System.Action activeFallingHandling, System.Action HandleRotation, MovementHandler movementHandler,
-    PlayerGroundCheck playerGroundCheck,
-    MovementStateMachine movementStateMachine, PlayerData data) {
-        this.HandleMovement = HandleMovement;
-        this.activeFallingHandling = activeFallingHandling;
-        this.HandleRotation = HandleRotation;
+ 
+    public MovementStatemachineHandler(MovementHandler movementHandler,
+    MovementStateMachine movementStateMachine) {
         this.movementHandler = movementHandler;
+
+        this.HandleMovement = movementHandler.HandleMovement;
+        this.activeFallingHandling = movementHandler.activeFallingHandling;
+        this.HandleRotation = movementHandler.HandleRotation;
         this.movementStateMachine = movementStateMachine;
-        this.playerGroundCheck = playerGroundCheck;
-        this.data = data;
-        this.HandleRotation = HandleRotation;
+        this.playerGroundCheck = movementHandler.playerGroundCheck;
+        this.data = movementHandler.data;
+        this.HandleRotation = movementHandler.HandleRotation;
     }
 
 
@@ -86,8 +85,8 @@ public class MovementStatemachineHandler
 
     public void locomotionStart()
     {
-        movementStateMachine.ChangeState(new BasicLocomotion(movementHandler, ChangeRootState, CallbackChangeStateInObj,
-        HandleMovement, HandleRotation, data, xPlayerPrimaryState.Movement.Locomotion.Idle));
+        movementStateMachine.ChangeState(new BasicLocomotion(movementHandler, ChangeRootState, 
+        CallbackChangeStateInObj, xPlayerPrimaryState.Movement.Locomotion.Idle));
     }
 
     public void locomotionUpdate()
